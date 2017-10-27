@@ -1,4 +1,5 @@
 import {Iproduct} from '../interface/Iproduct';
+import {DateService} from '../shared/date.service';
 import {ProductService} from '../shared/product.service';
 import {Component, OnInit, Provider} from '@angular/core';
 import {FormsModule} from '@angular/forms';
@@ -14,8 +15,9 @@ export class ProductsComponent implements OnInit {
   _searchBox: string;
   showImage: boolean = false;
   // show day of date using date Service
-  date: number;
+  date: string;
   filteredProducts: Iproduct[];
+  errorMsg:string;
 
   get searchBox() {
     return this._searchBox;
@@ -29,16 +31,18 @@ export class ProductsComponent implements OnInit {
 
   products: Iproduct[] = [];
 
-  constructor(private _productService: ProductService) {
-
+  constructor(private _productService: ProductService, private _date: DateService) {
   }
 
   /** Using Service **/
   ngOnInit() {
     console.log('Inside oninit !!');
-    this.products = this._productService.getProducts();
+    this._productService.getProducts().subscribe(products => {this.products = products 
+      this.filteredProducts = this.products;
+    }, error => this.errorMsg = <any>error ) ;
     console.log(this.products);
-    this.filteredProducts = this.products;
+
+    this.date = this._date.getDate();
   }
 
   public showToggle() {
@@ -47,7 +51,6 @@ export class ProductsComponent implements OnInit {
 
   /* Implementation of method performFilter to filter elements according to input box*/
   performFilter(filterBy: string): Iproduct[] {
-
     filterBy = filterBy.toLocaleLowerCase();
     return this.products.filter((product: Iproduct) =>
       product.productName.toLocaleLowerCase().indexOf(filterBy) !== -1);

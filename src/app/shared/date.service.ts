@@ -5,7 +5,7 @@ export class DateService {
 
   constructor() {}
 
-  getDate(): number {
-    return new Date().getDate();
+  getDate(): string {
+    return new Date().toDateString();
   }
 }
